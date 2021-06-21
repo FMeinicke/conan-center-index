@@ -22,8 +22,8 @@ class ConanRecipe(ConanFile):
     short_paths = True
 
     settings = "os", "arch", "compiler", "build_type"
-    options = {"fPIC": [True, False]}
-    default_options = {"fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False]}
+    default_options = {"shared": False, "fPIC": True}
 
     _cmake = None
 
@@ -127,6 +127,10 @@ class ConanRecipe(ConanFile):
         return os.path.join(self.package_folder, "lib", "components.json")
 
     def package_info(self):
+        bindir = os.path.join(self.package_folder, "bin")
+        self.output.info("Appending PATH environment variable: {}".format(bindir))
+        self.env_info.PATH.append(bindir)
+
         self.cpp_info.names["cmake_find_package"] = "absl"
         self.cpp_info.names["cmake_find_package_multi"] = "absl"
 
