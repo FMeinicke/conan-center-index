@@ -18,6 +18,7 @@ class grpcConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     # TODO: Add shared option
     options = {
+        "shared": [True, False],
         "fPIC": [True, False],
         "codegen": [True, False],
         "csharp_ext": [True, False],
@@ -30,6 +31,7 @@ class grpcConan(ConanFile):
         "ruby_plugin": [True, False]
     }
     default_options = {
+        "shared": False,
         "fPIC": True,
         "codegen": True,
         "csharp_ext": False,
@@ -88,6 +90,7 @@ class grpcConan(ConanFile):
         self._cmake.definitions["gRPC_BUILD_CODEGEN"] = self.options.codegen
         self._cmake.definitions["gRPC_BUILD_CSHARP_EXT"] = self.options.csharp_ext
         self._cmake.definitions["gRPC_BUILD_TESTS"] = False
+        self._cmake.definitions["CMAKE_BUILD_SHARED"] = self.options.shared
 
         # We need the generated cmake/ files (bc they depend on the list of targets, which is dynamic)
         self._cmake.definitions["gRPC_INSTALL"] = True
@@ -125,7 +128,7 @@ class grpcConan(ConanFile):
 
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         self.copy(pattern="*.cmake", dst=os.path.join("lib", "cmake"), src=os.path.join(self.source_folder, "cmake"))
-    
+
     def package_info(self):
         bindir = os.path.join(self.package_folder, "bin")
         self.output.info("Appending PATH environment variable: {}".format(bindir))
